@@ -111,3 +111,7 @@
 20251021	16:07:04	DELETE	/api/users?where={%22_id%22:%20%2268f7e30eac3d1c6afcf574fe%22}
 20251021	16:07:16	GET	/api/users?where={%22_id%22:%20%2268f7e30eac3d1c6afcf574fe%22}
 20251021	16:07:37	DELETE	/api/users?where={%22_id%22:%20%2268f7e30eac3d1c6afcf574fe%22}
+20251021	16:47:49	GET	/api/tasks
+20251021	16:58:01	GET	/api/tasks
+20251021	17:14:58	POST	/api/tasks
+20251021	17:15:01	GET	/api/tasks

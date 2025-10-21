@@ -10,6 +10,7 @@ var allowCrossDomain = require('./config/allowCrossDomain');
 //routers
 var mainApiRouter = require('./routes/apis/root');
 var usersApiRouter = require('./routes/apis/users');
+var tasksApiRouter = require('./routes/apis/tasks');
 
 // Read .env file
 require('dotenv').config();
@@ -49,6 +50,11 @@ app.use('/api', mainApiRouter);
 
 // users routes
 app.use('/api/users', usersApiRouter);
+
+
+
+// users routes
+app.use('/api/tasks', tasksApiRouter);
 
 
 
