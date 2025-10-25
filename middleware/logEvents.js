@@ -25,9 +25,10 @@ const logger = (req, res, next) => {
 }
 
 const errorHandler = (err, req, res, next) => {
-    logEvents(`${err.name}: ${err.message}`, 'errLog.txt');
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
+  logEvents(`${err.name}: ${err.message}`, 'errLog.txt');
+  console.error(err.stack);
+  // Return a generic, technology-agnostic error message
+  res.status(500).json({ message: 'Internal server error.', data: null });
 };
 
 module.exports = { logger, logEvents, errorHandler };

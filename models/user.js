@@ -12,7 +12,7 @@ var UserSchema = new mongoose.Schema({
         required: true,
     },
     pendingTasks:{
-        type: [String],
+        type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Task' }],
         default: []
     },
     dateCreated: { 

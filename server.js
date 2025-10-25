@@ -6,6 +6,7 @@ var bodyParser = require('body-parser');
 
 //middlewares
 var allowCrossDomain = require('./config/allowCrossDomain');
+var formatResponse = require('./middleware/formatResponse');
 
 //routers
 var mainApiRouter = require('./routes/apis/root');
@@ -40,6 +41,9 @@ mongoose.connect(process.env.MONGODB_URI,  {
 // Use the body-parser package in our application
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Ensure all JSON responses follow { message, data }
+app.use(formatResponse);
 
 
 // ##########################################
