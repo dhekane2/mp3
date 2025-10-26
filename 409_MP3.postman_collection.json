@@ -1,0 +1,324 @@
+{
+	"info": {
+		"_postman_id": "e9a9c93a-8652-4a25-b784-0be7ada1edd3",
+		"name": "409_MP3",
+		"description": "| Endpoints | Actions | Intended Outcome |\n| --- | --- | --- |\n| users (done) | GET | Respond with a List of users |\n|  | POST | Create a new user. Respond with details of new user |\n| users/:id (done) | GET | Respond with details of specified user or 404 error |\n|  | PUT | Replace entire user with supplied user or 404 error |\n|  | DELETE | Delete specified user or 404 error |\n| tasks | GET | Respond with a List of tasks |\n|  | POST | Create a new task. Respond with details of new task |\n| tasks/:id | GET | Respond with details of specified task or 404 error |\n|  | PUT | Replace entire task with supplied task or 404 error |\n|  | DELETE | Delete specified task or 404 error |\n\n| Query | Description |\n| --- | --- |\n| `http://localhost:3000/api/tasks` | Returns full list of tasks |\n| `http://localhost:3000/api/users` | Returns full list of users |\n| `http://localhost:3000/api/users?where={\"_id\": \"55099652e5993a350458b7b7\"}` | Returns a list with a single user with the specified ID ('_id' will be different) |\n| `http://localhost:3000/api/tasks?where={\"completed\": true}` | Returns a list of completed tasks |\n| `http://localhost:3000/api/tasks?where={\"_id\": {\"$in\": [\"59f930d6b1596b0cb3e82953\",\"5a1b6d7bd72ba9106fe9239c\"]}}` | Returns a set of tasks |\n| `http://localhost:3000/api/users?sort={\"name\": 1}` | Returns a list of users sorted by name |\n| `http://localhost:3000/api/users?select={\"_id\": 0}` | Returns a list of users without the _id field |\n| `http://localhost:3000/api/tasks?skip=60&limit=20` | Returns tasks number from 61 to 80 |",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40219974"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "get_users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{409mp3-base}}/api/users?where={\"_id\": \"68fd758f86c9c06af4d8bd70\"}",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "select",
+									"value": "{\"_id\":0}",
+									"disabled": true
+								},
+								{
+									"key": "where",
+									"value": "{\"_id\": \"68fd758f86c9c06af4d8bd70\"}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post_users",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"Test_user1\",\r\n    \"email\":\"anthony@thomas.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{409mp3-base}}/api/users",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_users_by_id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{409mp3-base}}/api/users/68f7214bf7ae0f67d0f2ebd9",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"68f7214bf7ae0f67d0f2ebd9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put_users_by_id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"anthony thomas\",\r\n    \"email\": \"anthony@thomas.com\",\r\n    \"pendingTasks\":[\"68fd758f86c9c06af4d8bd70\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{409mp3-base}}/api/users/68fd758e86c9c06af4d8bd64",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"68fd758e86c9c06af4d8bd64"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_users_by_id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{409mp3-base}}/api/users/68fd758e86c9c06af4d8bd64",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"68fd758e86c9c06af4d8bd64"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "tasks",
+			"item": [
+				{
+					"name": "get_tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{409mp3-base}}/api/tasks",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							],
+							"query": [
+								{
+									"key": "where",
+									"value": "{\"completed\":true}",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "{\"name\":1}",
+									"disabled": true
+								},
+								{
+									"key": "skip",
+									"value": "60",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"disabled": true
+								},
+								{
+									"key": "where",
+									"value": "{\"assignedUser\": {\"$in\": [\"68fd758e86c9c06af4d8bd64\"]}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create_tasks",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"task4\",\r\n  \"description\": \"Test desc4\",\r\n  \"deadline\": \"2025-11-05\",\r\n  \"completed\": false,\r\n  \"assignedUser\": \"68f7214bf7ae0f67d0f2ebd9\",\r\n  \"assignedUserName\": \"Test_user\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{409mp3-base}}/api/tasks",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"tasks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_tasks_by_id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"test task\",\r\n  \"deadline\": \"2025-11-05\",\r\n  \"completed\": true\r\n}\r\n"
+						},
+						"url": {
+							"raw": "{{409mp3-base}}/api/tasks/68fd54c4c071d47d405f1bfd",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"68fd54c4c071d47d405f1bfd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put_task_by_id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Fill out my passport forms\",\r\n  \"deadline\": \"2025-11-01T18:36:31.000Z\",\r\n  \"completed\": false,\r\n  \"assignedUser\": \"68fd758e86c9c06af4d8bd64\",\r\n  \"assignedUserName\": \"anthony thomas\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{409mp3-base}}/api/tasks/68fd759286c9c06af4d8bd9f",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"68fd759286c9c06af4d8bd9f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_task_by_id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{409mp3-base}}/api/tasks/68fd759286c9c06af4d8bd9f",
+							"host": [
+								"{{409mp3-base}}"
+							],
+							"path": [
+								"api",
+								"tasks",
+								"68fd759286c9c06af4d8bd9f"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "query_testing",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{409mp3-base}}/api/tasks?where={\"completed\" : true}",
+					"host": [
+						"{{409mp3-base}}"
+					],
+					"path": [
+						"api",
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "where",
+							"value": "{\"completed\" : true}"
+						},
+						{
+							"key": "count",
+							"value": "true",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "409mp3-base",
+			"value": "http://localhost:3000",
+			"type": "default"
+		}
+	]
+}
