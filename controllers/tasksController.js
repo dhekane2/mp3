@@ -8,6 +8,36 @@ const isValidObjectId = (id) => {
     return mongoose.Types.ObjectId.isValid(id);
 };
 
+// Robust deadline parser: supports ISO strings, numeric milliseconds, and numeric strings (including floats like 1761528737000.0)
+const parseDeadlineValue = (val) => {
+    if (val == null) return null;
+    // Already a valid Date
+    if (val instanceof Date && !isNaN(val.getTime())) return val;
+
+    // Number input (can be float). Treat as epoch milliseconds (truncate decimals)
+    if (typeof val === 'number' && Number.isFinite(val)) {
+        const ms = Math.trunc(val);
+        const d = new Date(ms);
+        return isNaN(d.getTime()) ? null : d;
+    }
+
+    // String input: try numeric first, then ISO/date string
+    if (typeof val === 'string') {
+        // Attempt numeric parse (e.g., "1761528737000.0")
+        const num = Number(val);
+        if (!Number.isNaN(num) && Number.isFinite(num)) {
+            const ms = Math.trunc(num);
+            const d = new Date(ms);
+            if (!isNaN(d.getTime())) return d;
+        }
+        // Fallback: try native Date parsing for ISO-like strings
+        const d2 = new Date(val);
+        if (!isNaN(d2.getTime())) return d2;
+    }
+
+    return null;
+};
+
 const getTask = async (req, res) => {
 
     // Safely parse JSON query params if present
@@ -48,7 +78,7 @@ const getTask = async (req, res) => {
         // Simple string id: validate and cast
         if (typeof idFilter === 'string') {
             if (!isValidObjectId(idFilter)) {
-                return res.status(404).json({ "message": "No tasks found." });
+                return res.status(404).json(format("task not found", []));
             }
             where._id = new mongoose.Types.ObjectId(idFilter);
         }
@@ -58,11 +88,11 @@ const getTask = async (req, res) => {
             if (Object.prototype.hasOwnProperty.call(idFilter, '$in')) {
                 const ids = idFilter.$in;
                 if (!Array.isArray(ids) || ids.length === 0) {
-                    return res.status(404).json({ "message": "No tasks found." });
+                    return res.status(404).json(format("task not found", []));
                 }
                 // Validate each id and cast to ObjectId
                 if (!ids.every(isValidObjectId)) {
-                    return res.status(404).json({ "message": "No tasks found." });
+                    return res.status(404).json(format("task not found", []));
                 }
                 where._id.$in = ids.map((id) => new mongoose.Types.ObjectId(id));
             }
@@ -70,10 +100,10 @@ const getTask = async (req, res) => {
             else if (Object.prototype.hasOwnProperty.call(idFilter, '$nin')) {
                 const ids = idFilter.$nin;
                 if (!Array.isArray(ids)) {
-                    return res.status(404).json({ "message": "No tasks found." });
+                    return res.status(404).json(format("task not found", []));
                 }
                 if (!ids.every(isValidObjectId)) {
-                    return res.status(404).json({ "message": "No tasks found." });
+                    return res.status(404).json(format("task not found", []));
                 }
                 where._id.$nin = ids.map((id) => new mongoose.Types.ObjectId(id));
             }
@@ -81,7 +111,7 @@ const getTask = async (req, res) => {
         }
         // Any other type is invalid
         else if (typeof idFilter !== 'undefined') {
-            return res.status(404).json({ "message": "No tasks found." });
+            return res.status(404).json(format("task not found", []));
         }
     }
     
@@ -102,7 +132,7 @@ const getTask = async (req, res) => {
         if (limit !== null) query = query.limit(limit);
         const result = await query.lean();
         // Case 2: _id is valid but no task found
-    if(!result || result.length === 0) return res.status(404).json(format("No tasks found.", null));
+    if(!result || result.length === 0) return res.status(404).json(format("task not found", []));
     res.json(format('OK', result));
     }
     catch (err) {
@@ -120,10 +150,10 @@ const createTask = async (req, res) => {
 
     const { name, deadline, description, completed, assignedUser, assignedUserName } = req.body;
 
-    // Validating deadline is a valid date
-    const deadlineDate = new Date(deadline);
-    if(isNaN(deadlineDate.getTime())) {
-    return res.status(400).json(format("Invalid deadline format. Please provide a valid date.", null));
+    // Validating deadline is a valid date (supports ISO strings and numeric ms including floats)
+    const deadlineDate = parseDeadlineValue(deadline);
+    if(!deadlineDate) {
+        return res.status(400).json(format("Invalid deadline format. Please provide a valid date.", null));
     }
 
     // checking if assignedUser is a valid ObjectId
@@ -202,8 +232,8 @@ const updateTaskById = async (req, res) => {
         if(!name || !deadline) {
             return res.status(400).json(format("Name and deadline are required.", null));
         }
-        const deadlineDate = new Date(deadline);
-        if(isNaN(deadlineDate.getTime())) {
+        const deadlineDate = parseDeadlineValue(deadline);
+        if(!deadlineDate) {
             return res.status(400).json(format("Invalid deadline format. Please provide a valid date.", null));
         }
         // checking if assignedUser is a valid ObjectId
@@ -300,7 +330,8 @@ const deleteTaskById = async (req, res) => {
                 { $pull: { pendingTasks: deleted._id } }
             );
         }
-        return res.json(format('OK', deleted));
+    // Successful deletion: 200 OK, send success message
+    return res.status(200).json(format('Task deleted successfully.', null));
     } catch (err) {
         return res.status(400).json(format("Error deleting task.", null));
     }
@@ -311,6 +342,7 @@ const deleteTaskById = async (req, res) => {
 module.exports = {
     getTask,
     createTask,
+    
     getTaskById,
     updateTaskById,
     deleteTaskById

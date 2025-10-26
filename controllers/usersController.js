@@ -39,7 +39,7 @@ const getUser  = async (req, res) => {
 
     // Case 1: id is provided but invalid
     if ( (where?._id) && (!isValidObjectId(where._id))) {
-        return res.status(404).json({ "message": "No users found." });
+        return res.status(404).json(format("user not found", []));
     }
     
     try{
@@ -52,8 +52,8 @@ const getUser  = async (req, res) => {
     if (skip) query = query.skip(skip);
     if (limit !== null) query = query.limit(limit);
     const result = await query.lean();
-        // Case 2: _id is valid but no user found
-        if(!result || result.length === 0) return res.status(404).json(format("No users found.", null));
+    // Case 2: _id is valid but no user found
+    if(!result || result.length === 0) return res.status(404).json(format("user not found", []));
         res.json(format('OK', result));
     }
     catch (err) {
@@ -254,100 +254,19 @@ const deleteUserById = async (req, res) => {
             { assignedUser: "", assignedUserName: 'unassigned' }
         ).exec();
 
-        return res.json(format('OK', deleted));
+    // Successful deletion: 200 OK, send success message
+    return res.status(200).json(format('User deleted successfully.', null));
     } catch (err) {
         return res.status(400).json(format("Error deleting user.", null));
     }
 };
 
 
-
-
-// const updateUser = async (req, res) => {
-//     const where = req?.query?.where ? JSON.parse(req.query.where) : {};
-
-//     if(!where?._id) {
-//         return res.status(404).json({ "message": "User ID in where clause is required." });
-//     }
-//     const id = where._id;
-    
-    
-//     // Validate the ObjectId format
-//     if (!isValidObjectId(id)) {
-//         return res.status(400).json({ "message": `User not found. Possibly due to an invalid ID format.` });
-//     }
-
-//     try {
-//         // Check if user exists
-//         const current = await User.findById(id);
-//         if(!current) return res.status(404).json({ "message": `User with id = ${id} not found.` });
-
-//         const { name, email, pendingTasks } = req?.body || {};
-//         if(!name || !email) {
-//             return res.status(400).json({ "message": "Name and email are required." });
-//         }
-        
-//         const duplicate = await User.findOne({ email, _id: { $ne: id } }).exec();
-//         if(duplicate) {
-//             return res.status(409).json({ "message": "A user with this email already exists." });
-//         }
-
-//         const replacement = {
-//             name,
-//             email,
-//             pendingTasks: Array.isArray(pendingTasks) ? pendingTasks : [],
-//             dateCreated: new Date()
-//         };
-
-//         const updated = await User.findOneAndUpdate(
-//             { _id: id },
-//             replacement,
-//             {  
-//                 new: true, 
-//                 runValidators: true, 
-//                 overwrite: true 
-//             }).exec();
-
-//         return res.json(updated);
-//     } catch (err) {
-//         return res.status(400).json({ "message": "Error replacing user." });
-//     }
-// }
-
-// const deleteUser = async (req, res) => {
-//     const where = req?.query?.where ? JSON.parse(req.query.where) : {};
-
-//     // Require an id in where clause (aligning with current updateUser behavior)
-//     if(!where?._id) {
-//         return res.status(404).json({ "message": "User ID in where clause is required." });
-//     }
-
-//     const id = where._id;
-
-//     // Validate ObjectId format
-//     if (!isValidObjectId(id)) {
-//         return res.status(400).json({ "message": "User not found. Possibly due to an invalid ID format." });
-//     }
-
-//     try {
-//         const deleted = await User.findByIdAndDelete(id).exec();
-//         if(!deleted) {
-//             return res.status(404).json({ "message": `User with id = ${id} not found.` });
-//         }
-//         return res.json(deleted);
-//     } catch (err) {
-//         return res.status(400).json({ "message": "Error deleting user." });
-//     }
-// }
-
-
 module.exports = {
     getUser,
     createUser,
-    // updateUser,
-    // deleteUser 
+
     getUserById,
     updateUserById,
     deleteUserById 
 };
-

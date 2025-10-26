@@ -21,8 +21,12 @@ function formatResponse(req, res, next) {
         typeof body.message === 'string' &&
         Object.prototype.hasOwnProperty.call(body, 'data')
       ) {
-        // For errors, enforce data to be null to avoid leaking internals
+        // For errors, default to null data EXCEPT allow 404 with [] for list endpoints
         if (status >= 400) {
+          if (status === 404 && Array.isArray(body.data)) {
+            // honor explicit empty arrays on not found
+            return originalJson({ message: body.message, data: body.data });
+          }
           return originalJson({ message: body.message, data: null });
         }
         return originalJson(body);
