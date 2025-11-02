@@ -203,12 +203,12 @@ const getTaskById = async (req, res) => {
     try {
         select = req?.query?.select ? JSON.parse(req.query.select) : null;
     } catch (e) {
-    return res.status(400).json(format("Invalid query parameter JSON.", null));
+    return res.status(404).json(format("Task not found. Possibly due to invalid query parameter.", null));
     }
 
     // Validate ObjectId format
     if (!isValidObjectId(id)) {
-    return res.status(400).json(format("Task not found. Possibly due to an invalid ID format.", null));
+    return res.status(404).json(format("Task not found. Possibly due to an invalid ID format.", null));
     }
     try {
         const task = await Task.findById(id, select).exec();
@@ -225,7 +225,7 @@ const updateTaskById = async (req, res) => {
     const id = req.params.id;
     // Validate ObjectId format
     if (!isValidObjectId(id)) {
-    return res.status(400).json(format("Task not found. Possibly due to an invalid ID format.", null));
+    return res.status(404).json(format("Task not found. Possibly due to an invalid ID format.", null));
     }
     try {
         const { name, deadline, description, completed, assignedUser, assignedUserName } = req?.body || {};
@@ -316,7 +316,7 @@ const deleteTaskById = async (req, res) => {
     const id = req.params.id;
     // Validate ObjectId format
     if (!isValidObjectId(id)) {
-    return res.status(400).json(format("Task not found. Possibly due to an invalid ID format.", null));
+    return res.status(404).json(format("Task not found. Possibly due to an invalid ID format.", null));
     }
     try {
         const deleted = await Task.findByIdAndDelete(id).exec();
