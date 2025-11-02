@@ -92,12 +92,12 @@ const getUserById = async (req, res) => {
     try {
         select = req?.query?.select ? JSON.parse(req.query.select) : null;
     } catch (e) {
-    return res.status(400).json(format("Invalid query parameter JSON.", null));
+    return res.status(404).json(format("User not found. Possibly due to invalid query parameter.", null));
     }
 
     // Validate ObjectId format
     if (!isValidObjectId(id)) {
-    return res.status(400).json(format("User not found. Possibly due to an invalid ID format.", null));
+    return res.status(404).json(format("User not found. Possibly due to an invalid ID format.", null));
     }
     try {
         const user = await User.findById(id, select).exec();
@@ -114,7 +114,7 @@ const updateUserById = async (req, res) => {
     const id = req.params.id;
     // Validate ObjectId format
     if (!isValidObjectId(id)) {
-    return res.status(400).json(format("User not found. Possibly due to an invalid ID format.", null));
+    return res.status(404).json(format("User not found. Possibly due to an invalid ID format.", null));
     }
     try {
         // Validate required fields
